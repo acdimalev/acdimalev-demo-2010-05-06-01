@@ -23,7 +23,12 @@ int main(int argc, char **argv) {
   setlocale(LC_ALL, "");
 
   SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER);
-  SDL_SetVideoMode(WIDTH, HEIGHT, 32, 0);
+#if FULLSCREEN
+  SDL_SetVideoMode(HRES, VRES, 32, SDL_FULLSCREEN);
+  SDL_ShowCursor(0);
+#else
+  SDL_SetVideoMode(HRES, VRES, 32, 0);
+#endif
 
   { /* Initialize Canvas */
     cairo_surface_t *cr_surface;
@@ -41,11 +46,11 @@ int main(int argc, char **argv) {
     cairo_surface_destroy(cr_surface);
 
     // cartesian
-    cairo_translate(cr, WIDTH/2.0, HEIGHT/2.0);
+    cairo_translate(cr, HRES/2.0, VRES/2.0);
     cairo_scale(cr, 1, -1);
 
     // fixed scale
-    cairo_scale(cr, SCALE, SCALE);
+    cairo_scale(cr, SCALE * 1.0 * HRES / WIDTH, SCALE * 1.0 * VRES / HEIGHT);
   }
 
   { /* Demo Logic */
@@ -87,7 +92,7 @@ int main(int argc, char **argv) {
       gap = 1/16.0 - -te.y_bearing;
 
       cairo_move_to(cr,
-        1/2.0 * -WIDTH / SCALE,
+        1/2.0 * -WIDTH / SCALE + gap,
         1/2.0 * HEIGHT / SCALE - 1/16.0);
       cairo_save(cr);
       cairo_scale(cr, 1, -1);
@@ -103,7 +108,7 @@ int main(int argc, char **argv) {
       cairo_restore(cr);
 
       cairo_move_to(cr,
-        1/2.0 * -WIDTH / SCALE,
+        1/2.0 * -WIDTH / SCALE + gap,
         1/2.0 * -HEIGHT / SCALE + gap);
       cairo_save(cr);
       cairo_scale(cr, 1, -1);
@@ -149,6 +154,11 @@ int main(int argc, char **argv) {
       while ( SDL_PollEvent(&event) ) {
         if (event.type == SDL_QUIT) {
           running = 0;
+        }
+        if (event.type == SDL_KEYDOWN) {
+          if (event.key.keysym.sym == SDLK_q) {
+            running = 0;
+          }
         }
       }
     }
