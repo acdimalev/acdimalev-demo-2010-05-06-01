@@ -71,7 +71,7 @@ int main(int argc, char **argv) {
 
     { /* Render Frame */
       cairo_text_extents_t te;
-      char string[8];
+      char string[10];
       double gap;
 
       // Clear
@@ -83,7 +83,7 @@ int main(int argc, char **argv) {
       cairo_set_source_rgb(cr, 1, 1, 1);
 
       // Render Value
-      strfmon(string, sizeof(string), "%!7.0n", (double)value);
+      strfmon(string, sizeof(string), "%!9.0n", (double)value);
       cairo_select_font_face(cr, "monospace",
         CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
       cairo_set_font_size(cr, 1/16.0);
